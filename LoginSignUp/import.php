@@ -6,7 +6,7 @@
  * Time: 8:39 PM
  */
 
-$host = 'localhost';
+$host = '18.218.22.129';
 $user = 'root';
 $password = 'password123';
 
@@ -29,7 +29,6 @@ if( !$mysql -> query('CREATE DATABASE accounts') ) {
 
 //this creates the users table with all of the fields
 $mysql -> query('
-
 CREATE TABLE `accounts`.`users`
 (
     `id` INT NOT NULL AUTO_INCREMENT,

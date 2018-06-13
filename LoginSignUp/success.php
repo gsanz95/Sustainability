@@ -17,9 +17,10 @@ session_start();
     <title>Success</title>
     <?php include 'css/css.html'; ?>
 </head>
-<a>
-    <div class=""form">
-    <h1>Success</h1>
+<body>
+
+    <div class="form">
+    <h1><?='Success'; ?></h1>
     <p>
         <?php
         if(isset($_SESSION['message']) AND !empty($_SESSION['message'])):
@@ -29,7 +30,7 @@ session_start();
         endif
         ?>
     </p>
-    <a href="index.php><button class="button button-block"/>Home</button></a>
+    <a href="index.php"><button class="button button-block"/>Home</button></a>
 </div>
 </body>
 </html>

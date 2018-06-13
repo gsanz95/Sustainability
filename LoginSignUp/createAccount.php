@@ -10,16 +10,16 @@
 
 //set the session variables to be used on profile.php
 
-$_session['email'] = $_post['email'];
-$_session['first_name'] = $_post['firstname'];
-$_session['last_name'] = $_post['lastname'];
+$_SESSION['email'] = $_POST['email'];
+$_SESSION['first_name'] = $_POST['firstname'];
+$_SESSION['last_name'] = $_POST['lastname'];
 
 //escape post vars for account protection
 
-$first_name = $mysql -> escape_string($_post['firstname']) ;
-$last_name = $mysql -> escape_string($_post['lastname']);
-$email = $mysql -> escape_string($_post['email']);
-$password = $mysql -> escape_string(password_hash($_post['password'], PASSWORD_BCRYYPT ));
+$first_name = $mysql -> escape_string($_POST['firstname']) ;
+$last_name = $mysql -> escape_string($_POST['lastname']);
+$email = $mysql -> escape_string($_POST['email']);
+$password = $mysql -> escape_string(password_hash($_POST['password'], PASSWORD_BCRYPT ));
 $hash = $mysql -> escape_string( md5(rand(0,1000) ) );
 
 //this checks to see if the email entered already has a user

@@ -17,8 +17,8 @@ session_start();
     <title>Error</title>
     <?php include 'css/css.html'; ?>
 </head>
-<a>
-<div class=""form">
+<body>
+<div class="form">
     <h1>Error</h1>
     <p>
         <?php
@@ -29,7 +29,7 @@ session_start();
         endif
         ?>
     </p>
-<a href="index.php><button class="button button-block"/>Home</button></a>
+<a href="index.php"><button class="button button-block"/>Home</button></a>
 </div>
 </body>
 </html>
