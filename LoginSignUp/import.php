@@ -6,7 +6,7 @@
  * Time: 8:39 PM
  */
 
-$host = '18.218.22.129';
+$host = 'sustainability.cpnngrjylxoa.us-east-2.rds.amazonaws.com';
 $user = 'root';
 $password = 'password123';
 

@@ -8,15 +8,9 @@
 
 //Database connection settings
 
-$host = '18.218.22.129';
+$host = 'sustainability.cpnngrjylxoa.us-east-2.rds.amazonaws.com';
 $user = 'root';
 $pass = 'password123';
 $db = 'accounts';
-$mysql = new mysqli($host,$user,$pass) or die($mysql -> error);
-if($mysql->mysqli_connect_error())
-{
-    echo 'fail';
-}
-else{
-    echo 'success';
-}
+$mysql = new mysqli($host,$user,$pass,$db) or die($mysqli -> error);
+?>

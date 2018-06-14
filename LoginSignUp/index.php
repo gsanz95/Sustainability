@@ -28,31 +28,29 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 
     //user is registering
     elseif (isset($_POST['register']))
-    {require 'createAccount.php';
+    {require 'register.php';
     }
 }
 ?>
 
 
 <body>
-    <div class="form"
+  <div class="form"
 
-        <ul class = "tab-group">
-            <li class = "tab"><a href = "#signup">Sign Up</a><li>
-            <li class = "tab active"><a href="#login">Log In</a></li>
-        </ul>
+     <ul class = "tab-group">
+         <li class = "tab"><a href = "#signup">Sign Up</a><li>
+         <li class = "tab active"><a href="#login">Log In</a></li>
+     </ul>
 
-    <div class ="tab-content">
-
-
+     <div class ="tab-content">
         <div id="login">
             <h1>Welcome Back!</h1>
 
-            <form action=index.php" method="post" autocomplete="off">
+            <form action= "index.php" method="post" autocomplete="off">
 
                 <div class="field-wrap">
                     <label>
-                            Email Address<span class="req">*</span></div>
+                            Email Address<span class="req">*</span>
                     </label>
                     <input type="email" required autocomplete="off" name="email"/>
                 </div>
@@ -64,7 +62,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
                     <input type="password" required autocomplete="off" name="password"/>
                 </div>
 
-                <p class="forgot"><a href="forgot.php">Forgot Password?</a></p>
+                <p class="forgot"><a href="forgotPass.php">Forgot Password?</a></p>
             <button class="button button-block" name="login" />Log In</button>
 
             </form>
@@ -80,7 +78,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
                         </label>
                         <input type="text" required autocomplete="off" name='firstname' />
                     </div>
-                </div>
+
 
                 <div class = "field-wrap">
                     <label>

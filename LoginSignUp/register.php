@@ -8,27 +8,29 @@
  */
 
 
+
 //set the session variables to be used on profile.php
 
 $_SESSION['email'] = $_POST['email'];
 $_SESSION['first_name'] = $_POST['firstname'];
 $_SESSION['last_name'] = $_POST['lastname'];
 
+
 //escape post vars for account protection
 
-$first_name = $mysql -> escape_string($_POST['firstname']) ;
-$last_name = $mysql -> escape_string($_POST['lastname']);
-$email = $mysql -> escape_string($_POST['email']);
-$password = $mysql -> escape_string(password_hash($_POST['password'], PASSWORD_BCRYPT ));
-$hash = $mysql -> escape_string( md5(rand(0,1000) ) );
+$first_name = $mysqli->escape_string($_POST['firstname']) ;
+$last_name = $mysqli->escape_string($_POST['lastname']);
+$email = $mysqli->escape_string($_POST['email']);
+$password = $mysqli->escape_string(password_hash($_POST['password'], PASSWORD_BCRYPT ));
+$hash = $mysqli->escape_string( md5(rand(0,1000) ) );
 
 //this checks to see if the email entered already has a user
-$result = $mysql -> query("SELECT * FROM useres WHERE email = '$email'") or die($mysql -> error());
+$result = $mysqli->query("SELECT * FROM useres WHERE email = '$email'") or die($mysqli -> error());
 
 //if rows returned are more than 0, then the user email exists
 
 if($result -> num_rows > 0){
-    $_session['message'] = 'User with this email already exists!';
+    $_SESSION['message'] = 'User with this email already exists!';
     header("location: error.php");
 }
 
@@ -38,10 +40,10 @@ else{
         . "VALUES ('$first_name', '$last_name', '$email','$password', '$hash')" ;
 
     //adds a user to the db
-    if($mysql -> query($sql)){
-        $_session['active'] = 0; //this stays 0 until users activate account
-        $_session['logged in'] = true; // this lets us know that the user has logged in
-        $_session['message'] =
+    if($mysqli -> query($sql)){
+        $_SESSION['active'] = 0; //this stays 0 until users activate account
+        $_SESSION['logged in'] = true; // this lets us know that the user has logged in
+        $_SESSION['message'] =
             "Confirmation link has been sent to $email, please verify your account by clicking the link in the message!";
 
 
@@ -62,7 +64,7 @@ else{
     }
 
     else{
-        $_session['message'] = 'Registration failed!';
+        $_SESSION['message'] = 'Registration failed!';
         header("location: error.php");
 
     }
