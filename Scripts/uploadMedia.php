@@ -1,9 +1,9 @@
 <?php
+require '/var/www/html/database.php';
 
 $media_dir = "/var/www/uploads/";
 $media = $media_dir . basename($_FILES["fileToUpload"]["name"]);
-$uploadGranted = 1;
-$mediaFileType = strtolower(pathinfo($media,PATHINFO_EXTENSION));
+$uploadGranted = TRUE;
 
 //Check file
 if(isset($_POST["submit"])) {
@@ -11,40 +11,52 @@ if(isset($_POST["submit"])) {
     $isImage = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
     $isVideo = preg_match('/video\/*/',$_FILES["fileToUpload"]["tmp_name"]);
 
-    if($isImage !== false) {
+    if($isImage !== FALSE) {
+        $mediaFileType = 'img';
         echo "File is Image";
-        $uploadGranted = 1;
+        $uploadGranted = TRUE;
     }
-    else if($isVideo !== false) {
+    else if($isVideo !== FALSE) {
+        $mediaFileType = 'vid';
         echo "File is Video";
-        $uploadGranted = 1;
+        $uploadGranted = TRUE;
     }
     else {
+        $mediaFileType = 'err';
         echo "File uploaded isn't an image or a video format supported";
-        $uploadGranted = 0;
+        $uploadGranted = FALSE;
     }
 }
 
 //Check if file already exists
 if(file_exists($media)) {
     echo "Sorry, a file with the same name exists";
-    $uploadGranted = 0;
+    $uploadGranted = FALSE;
 }
 
 //Reject if bigger than 153 MB
 if($_FILES["fileToUpload"]["size"] > 160432128){
     echo "File is too large";
-    $uploadGranted = 0;
+    $uploadGranted = FALSE;
 }
 
 // Check if Upload is Allowed
-if($uploadGranted){
+if($uploadGranted == FALSE){
     echo "Sorry, your file was not uploaded.";
 }
+
 // Upload is allowed, try to upload
 else{
-    if(move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $media)){
-        echo "The file" . basename( $_FILES["fileToUpload"]["name"]) . "has been uploaded.";
+    // Save media info in Database
+    $storeSuccess = mysqli_query($conn,"INSERT INTO mediatable (media_name, media_type) VALUES ('" . basename($_FILES["fileToUpload"]["name"]) . "','" . $mediaFileType . "')");
+    if($storeSuccess){
+        if(move_uploaded_file( $_FILES["fileToUpload"]["tmp_name"], $media)){
+            echo "The file " . basename($_FILES["fileToUpload"]["name"]) . " has been uploaded.";
+        } else {
+            // Undo saving of media info in Database
+            mysqli_query($conn,"DELETE FROM mediatable WHERE media_name = '" . basename($_FILES["fileToUpload"]["name"]) . "'");
+            echo "Sorry, there was an error uploading the file";
+        }
     } else{
         echo "Sorry, there was an error uploading the file";
     }
