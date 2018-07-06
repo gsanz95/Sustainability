@@ -1,5 +1,5 @@
 <!DOCTYPE html >
-<!-- jQuery Script: dynamically add options-->
+<!-- jQuery Script: dynamically add more choices-->
 <html lang = "en" >
 <head >
     <meta charset = "UTF-8" >
@@ -10,10 +10,7 @@
         function () {
             $("#add-opt") . click(
                 function () {
-                    $("#poll-body") . append("<div class=\"row\">\n" +
-                        "Option: <input type=\"text\" name=\"answer[]\"/>\n" +
-                        "<br>\n" +
-                        "</div>");
+                    $("#poll-body") . append("Option: <input type=\"text\" name=\"answer[]\"/><br>");
                 });
         });
     </script >
@@ -21,16 +18,14 @@
 <body>
 
 <?php
-require "database.php";
-
-session_start();
+include "../registerComplete/navbar.php";
 
 // Variables
 $questionErr = $optionErr = "";
 $question = "";
 $option = array();
 
-// If page has been filled
+// Check if page has been filled
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($_POST["question"]))
     {
@@ -40,9 +35,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     if (empty($_POST["answer"]))
     {
-        $optionErr = "Please enter at least an option";
+        $optionErr = "Please enter at least one option";
     } else {
-        $option= $_POST["answer"];
+        $choices= $_POST["answer"];
     }
 }
 ?>
@@ -51,12 +46,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <form action = "<?php echo $_SERVER["PHP_SELF"];?>" method = "post" >
     <fieldset id = "poll-body" >
 
-        Question: <input type = "text" name = "question" >
+        Question: <input type = "text" name = "question" required>
         <br >
-        <div class="row" >
-    Option: <input type = "text" name = "answer[]" />
+            Option: <input type = "text" name = "answer[]" required/>
             <br >
-        </div >
     </fieldset >
 <input type = "button" id = "add-opt" value = "Add Another Option" />
 <input type = "submit" >
@@ -66,13 +59,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </html >
 
 <?php
-// Check values have been received
-echo "<h2>Input Received:</h2>";
-echo $question;
-echo "<br>";
-$arrlen = count($_POST["answer"]);
-for($x = 0; $x < $arrlen; $x++) {
-    echo $option[$x];
-    echo "<br>";
+require "../scripts/pollcreator.php";
+
+// When the page is filled, create poll
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // Create poll
+    $choiceNr = count($_POST["answer"]);
+    $poll_id = createPoll($_SESSION["id"], $_POST["question"], choiceNr);
+
+    // Insert choices into tables
+    if($poll_id != NULL) {
+        $choice_result = insertChoices($poll_id, $choiceNr, $choices);
+        if($choice_result) {
+            echo "<h2>Poll #" . $poll_id . " has been Created!</h2>";
+        }else
+        {
+            echo "<h2>Poll #" . $poll_id . " choice creation has FAILED!</h2>";
+        }
+    }
+    else {
+        echo "Poll creation FAILED! :(<br>";
+    }
 }
 ?>
