@@ -1,5 +1,8 @@
 <?php
-
+if(!isset($_SESSION))
+{
+    session_start();
+}
 
 require_once 'database.php';
 
@@ -12,7 +15,8 @@ $last_name = $last_name_err = "";
 // Processing form data when form is submitted
 
 // If form submitted, insert values into the database.
-if (isset($_REQUEST['username'])) {
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+if (isset($_REQUEST['username']) and isset($_REQUEST['password']) and isset($_REQUEST['first_name']) and isset($_REQUEST['last_name'])and isset($_REQUEST['confirm_password'])) {
     // removes backslashes
     $username = stripslashes($_REQUEST['username']);
     //escapes special characters in a string
@@ -30,51 +34,79 @@ if (isset($_REQUEST['username'])) {
     $password = mysqli_real_escape_string($conn, $password);
 
 
-
     // Check if user with that email already exists
     $result = mysqli_query($conn, "SELECT * FROM users WHERE email='$username'") or die(mysqli_error($conn));
 
     // We know user email exists if the rows returned are more than 0
-    if (mysqli_num_rows($result) > 0)
-    {
-       $username_err = "User with this email already exists!";
+    if (mysqli_num_rows($result) > 0) {
+        $username_err = "User with this email already exists!";
 
-    }
-    elseif($_POST['password'] != $_POST['confirm_password'])
-    {
-        $password_err = "The Passwords you entered do not match!";
-        $confirm_password ="";
+    } elseif (!preg_match("/^[a-zA-Z ]*$/", $first_name)) {
+        $first_name_err = "Only letters and white space allowed";
+        $confirm_password = "";
         $password = "";
-    }
-    elseif (empty(trim($_POST["username"]))) {
+
+    } elseif (empty(trim($_POST["first_name"]))) {
+        $first_name_err = "Please enter your first name!";
+        $confirm_password = "";
+        $password = "";
+
+    } elseif (!preg_match("/^[a-zA-Z ]*$/", $last_name)) {
+        $last_name_err = "Only letters and white space allowed";
+        $confirm_password = "";
+        $password = "";
+
+    } elseif (empty(trim($_POST["last_name"]))) {
+        $last_name_err = "Please enter your last name!";
+        $confirm_password = "";
+        $password = "";
+
+    } elseif (empty(trim($_POST["username"]))) {
         $username_err = "Please enter a valid email address!";
         $confirm_password = "";
         $password = "";
-    }
-    elseif (empty(trim($_POST["first_name"])))
-    {
-        $first_name_err = "Please enter your first name!";
-        $confirm_password ="";
+
+    } elseif (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+        $username_err = "Invalid email format";
+        $confirm_password = "";
         $password = "";
-    }
-    elseif (empty(trim($_POST["last_name"])))
-    {
-        $last_name_err = "Please enter your last name!";
-        $confirm_password ="";
+
+    } elseif (empty(trim($_POST["password"]))) {
+        $password_err = "Please enter a valid password!";
+        $confirm_password = "";
         $password = "";
-    }
-    else{
+
+    } elseif(strlen($_POST['password']) < 8 ){
+        $password_err = "Password must be between 8 to 16 characters";
+        $confirm_password = "";
+        $password = "";
+
+    } elseif(strlen($_POST['password']) > 16 ) {
+        $password_err = "Password must be between 8 to 16 characters";
+        $confirm_password = "";
+        $password = "";
+
+    } elseif (empty(trim($_POST["confirm_password"]))) {
+        $confirm_password_err = "Please confirm password!";
+        $confirm_password = "";
+        $password = "";
+
+    } elseif ($_POST['password'] != $_POST['confirm_password']) {
+        $confirm_password_err = "The Passwords you entered do not match!";
+        $confirm_password = "";
+        $password = "";
+    }else {
         $query = "INSERT into `users` (email, first_name, last_name, password)
                       VALUES ('$username','$first_name','$last_name','$password')";
         $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
-        if ($result)
-        {
+        if ($result) {
             echo "Registration Successful";
+            header("Location: login.php");
         }
 
     }
 
-
+}
 }
     ?>
 
@@ -83,41 +115,54 @@ if (isset($_REQUEST['username'])) {
 <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <style type="text/css">
-        body{ font: 14px sans-serif; }
-        .wrapper{ width: 350px; padding: 20px; }
+        body{       font: 14px sans-serif; }
+        .wrapper{
+            width: 350px; /* this is needed */
+            height: 660px; /* this is needed */
+            padding: 20px; /* this is for styling only */
+            position: absolute; /* this is needed */
+            margin: auto; /* this is needed */
+            left: 0; /* this is needed */
+            right:0; /* this is needed */
+            top: 0; /* this is needed */
+            bottom: 0; /* this is needed */
+            background-color: #B8DFF6;
+        }
     </style>
 </head>
 <body>
+<?php include "./navbar.php"?>
     <div class="wrapper">
         <h2>Sign Up</h2>
         <p>Please fill this form to create an account.</p>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <div class="form-group <?php echo (!empty($username_err)) ? 'has-error' : ''; ?>">
-                <label>Email</label>
-                <input type="text" name="username"class="form-control" value="<?php echo $username; ?>">
-                <span class="help-block"><?php echo $username_err; ?></span>
-            </div>
+
             <div class="form-group <?php echo (!empty($first_name_err)) ? 'has-error' : ''; ?>">
                 <label>First Name</label>
-                <input type="first_name" name="first_name" class="form-control" value="<?php echo $first_name; ?>">
-                <span class="help-block"><?php echo $first_name_err; ?></span>
+                <input type="text" name="first_name" class="form-control" value="<?php echo $last_name; ?>" >
+                <span class="help-block" style="color:#FE1A1A"><?php echo $first_name_err; ?></span>
             </div>
             <div class="form-group <?php echo (!empty($last_name_err)) ? 'has-error' : ''; ?>">
                 <label>Last Name</label>
-                <input type="last_name" name="last_name" class="form-control" value="<?php echo $last_name; ?>">
-                <span class="help-block"><?php echo $last_name_err; ?></span>
+                <input type="text" name="last_name" class="form-control" value="<?php echo $last_name; ?>">
+                <span class="help-block" style="color:#FE1A1A"><?php echo $last_name_err; ?></span>
+            </div>
+            <div class="form-group <?php echo (!empty($username_err)) ? 'has-error' : ''; ?>">
+                <label>Email</label>
+                <input type="text" name="username"class="form-control" value="<?php echo $username; ?>">
+                <span class="help-block" style="color:#FE1A1A"><?php echo $username_err; ?></span>
             </div>
             <div class="form-group <?php echo (!empty($password_err)) ? 'has-error' : ''; ?>">
-                <label>Password</label>
+                <label>Password <span style="font-size: smaller">(8-16 Characters)</span></label>
                 <input type="password" name="password" class="form-control" value="<?php echo $password; ?>">
-                <span class="help-block"><?php echo $password_err; ?></span>
+                <span class="help-block" style="color:#FE1A1A"><?php echo $password_err; ?></span>
             </div>
             <div class="form-group <?php echo (!empty($confirm_password_err)) ? 'has-error' : ''; ?>">
                 <label>Confirm Password</label>
                 <input type="password" name="confirm_password" class="form-control" value="<?php echo $confirm_password; ?>">
-                <span class="help-block"><?php echo $confirm_password_err; ?></span>
+                <span class="help-block" style="color:#FE1A1A"><?php echo $confirm_password_err; ?></span>
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
@@ -125,6 +170,8 @@ if (isset($_REQUEST['username'])) {
             </div>
             <p>Already have an account? <a href="login.php">Login here</a>.</p>
         </form>
+        <?php include "./footer.php";?>
     </div>
+
 </body>
 </html>

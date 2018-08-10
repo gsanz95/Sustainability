@@ -1,6 +1,8 @@
 <?php
 // Include config file
+
 require_once 'database.php';
+global $full_name;
 $user = $pass = "";
 $username_err = $password_err = "";
 // Processing form data when form is submitted
@@ -25,12 +27,20 @@ if( isset($_POST['username']) and isset($_POST['password']) ) {
             header("Location: login.php");
         } else {
             session_start();
-            $_SESSION['user'] = $user;
-            header('location: sucess.php');
+            $_SESSION['logged_in'] = true;
+            $_SESSION['id'] = $row['id'];
+            $_SESSION['first_name'] = $row['first_name'];
+            $_SESSION['last_name'] = $row['last_name'];
+            $_SESSION['user'] = $row['email'];
+
+            }
+
+            header('location: home.php');
         }
     }
+
 }
-}
+
 ?>
 
 
@@ -41,13 +51,28 @@ if( isset($_POST['username']) and isset($_POST['password']) ) {
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">
     <style type="text/css">
-        body{ font: 14px sans-serif; }
-        .wrapper{ width: 350px; padding: 20px; }
+        body{
+
+            font: 14px sans-serif; }
+        .wrapper{
+            width: 350px; /* this is needed */
+            height: 550px; /* this is needed */
+            padding: 20px; /* this is for styling only */
+            position: absolute; /* this is needed */
+            margin: auto; /* this is needed */
+            left: 0; /* this is needed */
+            right:0; /* this is needed */
+            top: 0; /* this is needed */
+            bottom: 0; /* this is needed */
+            background-color: #B8DFF6;
+    }
     </style>
 </head>
 <body>
+<?php include "./navbar.php"?>
 <div class="wrapper">
     <h2>Login</h2>
     <p>Please fill in your credentials to login.</p>
@@ -67,6 +92,8 @@ if( isset($_POST['username']) and isset($_POST['password']) ) {
         </div>
         <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>
     </form>
+    <?php include "./footer.php"; ?>
 </div>
+
 </body>
 </html>
